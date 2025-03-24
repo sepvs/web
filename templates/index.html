@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Gestos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function updateText(letter) {
+            const textBox = document.getElementById('gesture-text');
+            textBox.value = letter;
+        }
+
+        function fetchVideoFeed() {
+            const img = document.getElementById('video-feed');
+            img.src = "{{ url_for('video_feed') }}";
+            img.onload = () => {
+                setTimeout(fetchVideoFeed, 100);
+            };
+        }
+
+        if (!!window.EventSource) {
+            const source = new EventSource('/letter_feed');
+            source.onmessage = function(event) {
+                updateText(event.data);
+            };
+        }
+
+        window.onload = fetchVideoFeed;
+    </script>
+</head>
+<body>
+    <h1>Detección de Gestos</h1>
+    <div>
+        <img id="video-feed" alt="Video Feed">
+    </div>
+    <div>
+        <input type="text" id="gesture-text" class="gesture-display" readonly>
+    </div>
+    <div class="footer">
+        Silent Talk
+    </div>
+</body>
+</html>
