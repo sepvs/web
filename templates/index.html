@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Gestos</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        let cameraActive = true;
+
+        function updateText(letter) {
+            const detectedLetter = document.getElementById('detected-letter');
+            detectedLetter.textContent = letter;
+        }
+
+        function fetchVideoFeed() {
+            const img = document.getElementById('video-feed');
+            img.src = "{{ url_for('video_feed') }}";
+            img.onload = () => {
+                if (cameraActive) {
+                    setTimeout(fetchVideoFeed, 100);
+                }
+            };
+        }
+
+        function toggleCamera() {
+            cameraActive = !cameraActive;
+            const button = document.getElementById('toggle-camera');
+            if (cameraActive) {
+                button.textContent = 'Desactivar Cámara';
+                fetchVideoFeed();
+            } else {
+                button.textContent = 'Activar Cámara';
+                const img = document.getElementById('video-feed');
+                img.src = '';
+            }
+        }
+
+        function toggleInfoMessage() {
+            const infoMessage = document.getElementById('info-message');
+            if (infoMessage.style.display === 'none') {
+                infoMessage.style.display = 'block';
+            } else {
+                infoMessage.style.display = 'none';
+            }
+        }
+
+        if (!!window.EventSource) {
+            const source = new EventSource('/letter_feed');
+            source.onmessage = function(event) {
+                updateText(event.data);
+            };
+        }
+
+        window.onload = fetchVideoFeed;
+    </script>
+</head>
+<body>
+    <div class="content">
+        <h1>Detección de Gestos</h1>
+    </div>
+    <div class="video-container">
+        <img id="video-feed" alt="Video Feed">
+    </div>
+    <div id="detected-letter"></div>
+    <span id="info-icon" onclick="toggleInfoMessage()">?</span>
+    <div id="info-message">Realiza los gestos con tranquilidad. Aunque no puedas ver tu cámara, los gestos aparecerán en este cuadro de texto.</div>
+    <button id="toggle-camera" onclick="toggleCamera()">Desactivar Cámara</button>
+    <div class="footer">
+        Silent Talk®
+    </div>
+</body>
+</html>
