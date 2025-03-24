@@ -1,5 +1,0 @@
-flask
-python-dotenv
-mediapipe
-opencv-python
-gunicorn
