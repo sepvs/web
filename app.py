@@ -36,7 +36,7 @@ def crear_app():
                 landmarks[16].y > landmarks[13].y and landmarks[20].y < landmarks[17].y)
 
     def generate_frames():
-        cap = cv2.VideoCapture()
+        cap = cv2.VideoCapture(1)
         with mp_hands.Hands(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_hands=2) as hands:
             while cap.isOpened():
                 ret, frame = cap.read()
